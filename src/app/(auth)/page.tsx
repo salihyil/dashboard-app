@@ -9,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppContext } from "@/context";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next";
 
 const formSchema = z.object({
   username: z.string().min(2, { message: "Username must be at least 2 characters." }).max(50),
@@ -25,6 +27,7 @@ export default function LoginPage() {
       password: "",
     },
   });
+  const { setUser } = useAppContext();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const response = await fetch("https://recruitment-api.vercel.app/login", {
@@ -38,11 +41,10 @@ export default function LoginPage() {
     const data = await response.json();
 
     if (response.ok) {
-      document.cookie = `token=${data.jwt}; path=/; expires=${new Date(
-        Date.now() + 60 * 60 * 24 * 1000
-      ).toUTCString()}`;
+      setCookie("token", data.jwt);
+      setUser(data.jwt);
 
-      router.push("/dashboard");
+      router.refresh();
     } else {
       alert(data.message);
     }
