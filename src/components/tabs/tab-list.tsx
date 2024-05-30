@@ -1,3 +1,5 @@
+"use client"
+
 import React, { ReactElement, useState } from "react";
 
 import { sanitizeForId } from "@/lib/utils";

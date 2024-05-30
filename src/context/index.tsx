@@ -7,17 +7,17 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const AppContext = createContext<any>(undefined);
 
 export function AppWrapper({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [user, setUser] = useState<string | undefined>(undefined);
+  const [token, setToken] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const fetchCurrentToken = async () => {
       try {
         setLoading(true);
         const data = getCookie("token");
 
         if (data) {
-          setUser(data);
+          setToken(data);
         }
       } catch (e) {
         // Handle error
@@ -27,23 +27,23 @@ export function AppWrapper({ children }: Readonly<{ children: React.ReactNode }>
       }
     };
 
-    fetchCurrentUser();
+    fetchCurrentToken();
   }, []);
 
   const obj = useMemo(
     () => ({
-      user,
-      setUser,
+      token,
+      setToken,
     }),
-    [user]
+    [token]
   );
 
-  if (loading && !user) return <div>Loading...</div>;
+  if (loading && !token) return <div>Loading...</div>;
 
   return (
     <AppContext.Provider value={obj}>
       <main className="flex items-start justify-start w-full relative">
-        {user && <Sidebar />}
+        {token && <Sidebar />}
         <div className="w-full h-full p-6">{children}</div>
       </main>
     </AppContext.Provider>

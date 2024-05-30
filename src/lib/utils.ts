@@ -8,3 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 export const sanitizeForId = (label: string) => {
   return label.toLowerCase().replace(/[^\w\s]|(\s+)/g, (_match: string, group1: string) => (group1 ? "-" : ""));
 };
+
+export function numberWithDots(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+export const formatDate = (dateString: string) => {
+  const [month, year] = dateString.split(", ");
+  return `${month} 23, ${year ?? new Date().getFullYear()}`;
+};

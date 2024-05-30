@@ -9,11 +9,11 @@ import { usePathname, useRouter } from "next/navigation";
 export default function SidebarMenu({ menu = [] }: Readonly<{ menu: MenuItem[] }>) {
   const pathname = usePathname();
   const router = useRouter();
-  const { setUser } = useAppContext();
+  const { setToken } = useAppContext();
 
   const handleLogout = () => {
     deleteCookie("token");
-    setUser(undefined);
+    setToken(undefined);
     router.refresh();
   };
 

@@ -27,7 +27,7 @@ export default function LoginPage() {
       password: "",
     },
   });
-  const { setUser } = useAppContext();
+  const { setToken } = useAppContext();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const response = await fetch("https://recruitment-api.vercel.app/login", {
@@ -42,7 +42,7 @@ export default function LoginPage() {
 
     if (response.ok) {
       setCookie("token", data.jwt);
-      setUser(data.jwt);
+      setToken(data.jwt);
 
       router.refresh();
     } else {
