@@ -17,3 +17,7 @@ export const formatDate = (dateString: string) => {
   const [month, year] = dateString.split(", ");
   return `${month} 23, ${year ?? new Date().getFullYear()}`;
 };
+
+export const valueFormatter = function (number: number) {
+  return new Intl.NumberFormat('us').format(number).toString() + 'GB'
+};

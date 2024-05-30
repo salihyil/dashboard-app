@@ -5,7 +5,10 @@ import TabList from "@/components/tabs/tab-list";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { formatDate, numberWithDots } from "@/lib/utils";
 import { Info } from "@/types/Info";
+import { LineChart } from "@tremor/react";
 import { useEffect, useState } from "react";
+import { valueFormatter } from "../lib/utils";
+import { chartdata } from "@/dummy";
 
 type Props = {};
 
@@ -65,6 +68,20 @@ const Tab = (props: Props) => {
             <CardContent className="font-bold text-2xl">{numberWithDots(info.dailyUsage)} GB</CardContent>
           </Card>
         </div>
+        <Card className="mt-8">
+          <h3 className="pt-4 px-4 text-lg font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong">
+            Data usage per network
+          </h3>
+          <LineChart
+            className="mt-4 h-72"
+            data={chartdata}
+            index="day"
+            yAxisWidth={70}
+            categories={["perNetwork"]}
+            colors={["indigo"]}
+            valueFormatter={valueFormatter}
+          />
+        </Card>
       </TabItem>
     </TabList>
   );
