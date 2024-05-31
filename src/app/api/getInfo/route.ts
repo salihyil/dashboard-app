@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const res = await fetch("https://recruitment-api.vercel.app/get-info", {
     headers: {
       "Content-Type": "application/json",
-      authorization: token ?? "",
+      authorization: token || "",
     },
   });
   const data = await res.json();

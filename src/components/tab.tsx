@@ -3,16 +3,18 @@
 import TabItem from "@/components/tabs/tab-item";
 import TabList from "@/components/tabs/tab-list";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { formatDate, numberWithDots } from "@/lib/utils";
+import { chartdata } from "@/dummy";
+import { numberWithDots } from "@/lib/utils";
 import { Info } from "@/types/Info";
 import { LineChart } from "@tremor/react";
 import { useEffect, useState } from "react";
 import { valueFormatter } from "../lib/utils";
-import { chartdata } from "@/dummy";
+import Loading from "./loading";
 
 type Props = {};
 
 const Tab = (props: Props) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [info, setInfo] = useState<Info>({
     expireTime: "",
     lastChargeAmount: "",
@@ -23,10 +25,20 @@ const Tab = (props: Props) => {
 
   useEffect(() => {
     const getInfo = async () => {
-      const response = await fetch("/api/getInfo");
-      const { data } = await response.json();
+      setIsLoading(true);
 
-      setInfo(data);
+      try {
+        const res = await fetch("/api/getInfo");
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const { data } = await res.json();
+        setInfo(data);
+      } catch (err) {
+        throw new Error(err as string);
+      } finally {
+        setIsLoading(false);
+      }
     };
     getInfo();
   }, []);
@@ -42,7 +54,7 @@ const Tab = (props: Props) => {
             <CardHeader>
               <CardDescription className="font-semibold text-black text-sm">Subscription expires on</CardDescription>
             </CardHeader>
-            <CardContent className="text-2xl">{formatDate(info.expireTime)} </CardContent>
+            <CardContent>{isLoading ? <Loading /> : <div className="text-2xl"> {info.expireTime}</div>}</CardContent>
           </Card>
 
           <Card className="bg-[#E5ECF6]">
@@ -50,7 +62,13 @@ const Tab = (props: Props) => {
               <CardDescription className="font-semibold text-black text-sm">Last charge</CardDescription>
             </CardHeader>
             <CardContent>
-              <span className="text-2xl">{info.lastChargeAmount}</span> {info.lastCharge}
+              {isLoading ? (
+                <Loading />
+              ) : (
+                <div>
+                  <span className="text-xl">{info.lastChargeAmount}</span> {info.lastCharge}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -58,14 +76,26 @@ const Tab = (props: Props) => {
             <CardHeader>
               <CardDescription className="font-bold text-black">Total Usage Data</CardDescription>
             </CardHeader>
-            <CardContent className="font-bold text-2xl">{numberWithDots(info.totalDataUsage)} GB</CardContent>
+            <CardContent>
+              {isLoading ? (
+                <Loading />
+              ) : (
+                <div className="font-bold text-2xl">{`${numberWithDots(info.totalDataUsage)} GB`}</div>
+              )}
+            </CardContent>
           </Card>
 
           <Card className="bg-[#E5ECF6]">
             <CardHeader>
               <CardDescription className="font-bold text-black">Daily Usage Data</CardDescription>
             </CardHeader>
-            <CardContent className="font-bold text-2xl">{numberWithDots(info.dailyUsage)} GB</CardContent>
+            <CardContent>
+              {isLoading ? (
+                <Loading />
+              ) : (
+                <div className="font-bold text-2xl">{`${numberWithDots(info.dailyUsage)} GB`}</div>
+              )}
+            </CardContent>
           </Card>
         </div>
         <Card className="mt-8">

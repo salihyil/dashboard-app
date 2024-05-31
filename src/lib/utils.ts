@@ -15,7 +15,7 @@ export function numberWithDots(x: number) {
 
 export const formatDate = (dateString: string) => {
   const [month, year] = dateString.split(", ");
-  return `${month} 23, ${year ?? new Date().getFullYear()}`;
+  return `${month } 23, ${year}`;
 };
 
 export const valueFormatter = function (number: number) {
