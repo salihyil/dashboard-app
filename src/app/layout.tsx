@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { AppWrapper } from "@/context";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppWrapper>{children}</AppWrapper>
+        <AppWrapper>
+          {children}
+          <Toaster richColors />
+        </AppWrapper>
       </body>
     </html>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { Transaction, columns } from "@/app/(main)/dashboard/transactions/columns";
+import { DataTable } from "@/app/(main)/dashboard/transactions/data-table";
 import TabItem from "@/components/tabs/tab-item";
 import TabList from "@/components/tabs/tab-list";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
@@ -8,20 +10,18 @@ import { numberWithDots } from "@/lib/utils";
 import { Info } from "@/types/Info";
 import { LineChart } from "@tremor/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { valueFormatter } from "../lib/utils";
 import Loading from "./loading";
 
-type Props = {};
+type TabProps = {
+  tableData: Transaction[];
+};
 
-const Tab = (props: Props) => {
+const Tab = ({ tableData }: TabProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [info, setInfo] = useState<Info>({
-    expireTime: "",
-    lastChargeAmount: "",
-    lastCharge: "",
-    totalDataUsage: 0,
-    dailyUsage: 0,
-  });
+  const [error, setError] = useState(null);
+  const [info, setInfo] = useState<Info | null>(null);
 
   useEffect(() => {
     const getInfo = async () => {
@@ -34,7 +34,14 @@ const Tab = (props: Props) => {
         }
         const { data } = await res.json();
         setInfo(data);
-      } catch (err) {
+        setError(null);
+      } catch (err: any) {
+        toast.error(err.message, {
+          position: "top-right",
+          
+        });
+        setError(err.message);
+        setInfo(null);
         throw new Error(err as string);
       } finally {
         setIsLoading(false);
@@ -54,7 +61,7 @@ const Tab = (props: Props) => {
             <CardHeader>
               <CardDescription className="font-semibold text-black text-sm">Subscription expires on</CardDescription>
             </CardHeader>
-            <CardContent>{isLoading ? <Loading /> : <div className="text-2xl"> {info.expireTime}</div>}</CardContent>
+            <CardContent>{isLoading ? <Loading /> : <div className="text-2xl"> {info?.expireTime}</div>}</CardContent>
           </Card>
 
           <Card className="bg-[#E5ECF6]">
@@ -66,7 +73,7 @@ const Tab = (props: Props) => {
                 <Loading />
               ) : (
                 <div>
-                  <span className="text-xl">{info.lastChargeAmount}</span> {info.lastCharge}
+                  <span className="text-xl">{info?.lastChargeAmount}</span> {info?.lastCharge}
                 </div>
               )}
             </CardContent>
@@ -80,7 +87,7 @@ const Tab = (props: Props) => {
               {isLoading ? (
                 <Loading />
               ) : (
-                <div className="font-bold text-2xl">{`${numberWithDots(info.totalDataUsage)} GB`}</div>
+                <div className="font-bold text-2xl">{`${numberWithDots(info?.totalDataUsage)} GB`}</div>
               )}
             </CardContent>
           </Card>
@@ -93,12 +100,12 @@ const Tab = (props: Props) => {
               {isLoading ? (
                 <Loading />
               ) : (
-                <div className="font-bold text-2xl">{`${numberWithDots(info.dailyUsage)} GB`}</div>
+                <div className="font-bold text-2xl">{`${numberWithDots(info?.dailyUsage)} GB`}</div>
               )}
             </CardContent>
           </Card>
         </div>
-        <Card className="mt-8">
+        <Card className="my-8">
           <h3 className="pt-4 px-4 text-lg font-bold text-tremor-content-strong dark:text-dark-tremor-content-strong">
             Data usage per network
           </h3>
@@ -112,6 +119,8 @@ const Tab = (props: Props) => {
             valueFormatter={valueFormatter}
           />
         </Card>
+
+        <DataTable columns={columns} data={tableData} />
       </TabItem>
     </TabList>
   );

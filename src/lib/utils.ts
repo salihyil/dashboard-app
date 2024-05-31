@@ -9,8 +9,8 @@ export const sanitizeForId = (label: string) => {
   return label.toLowerCase().replace(/[^\w\s]|(\s+)/g, (_match: string, group1: string) => (group1 ? "-" : ""));
 };
 
-export function numberWithDots(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+export function numberWithDots(x: number|undefined) {
+  return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 export const formatDate = (dateString: string) => {
